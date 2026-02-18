@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <title>YouTube Tools Hub – Free Creator Toolkit</title>
+  <meta name="description" content="All-in-one YouTube Tools Hub. Download thumbnails, generate titles, hashtags, descriptions and grow your channel for free.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- AD SLOT HEADER -->
+  <!-- AD_HEADER -->
+</head>
+
+<body class="bg-gray-950 text-white">
+
+<div class="max-w-5xl mx-auto px-4 py-8">
+  <h1 class="text-4xl font-bold text-center mb-2">YouTube Tools Hub</h1>
+  <p class="text-center text-gray-400 mb-8">All-in-One Free Toolkit for YouTube Creators</p>
+
+  <!-- Tabs -->
+  <div class="flex flex-wrap justify-center gap-2 mb-6">
+    <button onclick="showTab('thumb')" class="tabBtn">Thumbnail</button>
+    <button onclick="showTab('bulk')" class="tabBtn">Bulk</button>
+    <button onclick="showTab('title')" class="tabBtn">Title</button>
+    <button onclick="showTab('tags')" class="tabBtn">Hashtags</button>
+    <button onclick="showTab('desc')" class="tabBtn">Description</button>
+    <button onclick="showTab('history')" class="tabBtn">History</button>
+  </div>
+
+  <!-- THUMBNAIL TOOL -->
+  <div id="thumb" class="tab">
+    <input id="ytUrl" class="w-full p-3 bg-gray-800 rounded mb-3" placeholder="Paste YouTube URL">
+    <button onclick="getThumbnail()" class="w-full bg-red-600 p-3 rounded">Get Thumbnail</button>
+    <div id="thumbResults" class="grid md:grid-cols-2 gap-4 mt-4"></div>
+  </div>
+
+  <!-- BULK TOOL -->
+  <div id="bulk" class="tab hidden">
+    <textarea id="bulkUrls" rows="5" class="w-full p-3 bg-gray-800 rounded" placeholder="Paste multiple YouTube URLs (one per line)"></textarea>
+    <button onclick="bulkDownload()" class="w-full bg-green-600 p-3 rounded mt-3">Bulk Generate</button>
+    <div id="bulkResults" class="grid md:grid-cols-3 gap-4 mt-4"></div>
+  </div>
+
+  <!-- TITLE GENERATOR -->
+  <div id="title" class="tab hidden">
+    <input id="titleTopic" class="w-full p-3 bg-gray-800 rounded" placeholder="Enter video topic">
+    <button onclick="generateTitles()" class="w-full bg-blue-600 p-3 rounded mt-3">Generate Titles</button>
+    <ul id="titleResults" class="mt-4 space-y-2"></ul>
+  </div>
+
+  <!-- HASHTAG -->
+  <div id="tags" class="tab hidden">
+    <input id="tagTopic" class="w-full p-3 bg-gray-800 rounded" placeholder="Enter keyword">
+    <button onclick="generateTags()" class="w-full bg-purple-600 p-3 rounded mt-3">Generate Hashtags</button>
+    <textarea id="tagResults" rows="5" class="w-full mt-3 bg-gray-800 p-3 rounded"></textarea>
+  </div>
+
+  <!-- DESCRIPTION -->
+  <div id="desc" class="tab hidden">
+    <input id="descTopic" class="w-full p-3 bg-gray-800 rounded" placeholder="Enter video topic">
+    <button onclick="generateDesc()" class="w-full bg-yellow-600 p-3 rounded mt-3">Generate Description</button>
+    <textarea id="descResults" rows="6" class="w-full mt-3 bg-gray-800 p-3 rounded"></textarea>
+  </div>
+
+  <!-- HISTORY -->
+  <div id="history" class="tab hidden">
+    <ul id="historyList" class="space-y-2"></ul>
+  </div>
+
+</div>
+
+<!-- AD SLOT MIDDLE -->
+<!-- AD_MIDDLE -->
+
+<!-- SEO CONTENT -->
+<div class="max-w-4xl mx-auto px-4 py-10 text-gray-300">
+<h2 class="text-2xl font-bold mb-3">Free YouTube Creator Tools Hub</h2>
+<p>
+This all-in-one YouTube Tools Hub helps creators download YouTube thumbnails,
+generate viral titles, hashtags, and SEO descriptions completely free.
+No login, no payment, works on mobile.
+</p>
+
+<h3 class="text-xl font-semibold mt-4">How to Use</h3>
+<ol class="list-decimal ml-5">
+<li>Select a tool from the top menu.</li>
+<li>Paste your YouTube link or topic.</li>
+<li>Click generate.</li>
+<li>Download or copy instantly.</li>
+</ol>
+
+<h3 class="text-xl font-semibold mt-4">FAQ</h3>
+<p><b>Is this free?</b> Yes forever.</p>
+<p><b>Do I need account?</b> No.</p>
+<p><b>Works on mobile?</b> Yes 100%.</p>
+<p><b>Can I use for Shorts?</b> Yes.</p>
+</div>
+
+<script>
+const tabs = document.querySelectorAll(".tab");
+const buttons = document.querySelectorAll(".tabBtn");
+
+function showTab(id){
+  tabs.forEach(t=>t.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+}
+
+function extractID(url){
+  const r = /(?:v=|\/)([0-9A-Za-z_-]{11})/;
+  const m = url.match(r);
+  return m?m[1]:null;
+}
+
+function saveHistory(url){
+  let h = JSON.parse(localStorage.getItem("history")||"[]");
+  h.unshift(url);
+  h = h.slice(0,10);
+  localStorage.setItem("history",JSON.stringify(h));
+  renderHistory();
+}
+
+function renderHistory(){
+  const h = JSON.parse(localStorage.getItem("history")||"[]");
+  document.getElementById("historyList").innerHTML =
+    h.map(u=>`<li class="bg-gray-800 p-2 rounded">${u}</li>`).join("");
+}
+renderHistory();
+
+function getThumbnail(){
+  const url = ytUrl.value;
+  const id = extractID(url);
+  if(!id) return alert("Invalid URL");
+  saveHistory(url);
+  const q = ["maxresdefault","hqdefault","mqdefault","default"];
+  thumbResults.innerHTML = q.map(v=>{
+    const img=`https://img.youtube.com/vi/${id}/${v}.jpg`;
+    return `
+    <div class="bg-gray-800 p-3 rounded text-center">
+      <img src="${img}" class="mb-2 rounded">
+      <a href="${img}" download target="_blank" class="bg-green-600 px-3 py-1 rounded">Download</a>
+    </div>`;
+  }).join("");
+}
+
+function bulkDownload(){
+  const urls = bulkUrls.value.split("\n");
+  bulkResults.innerHTML="";
+  urls.forEach(u=>{
+    const id=extractID(u);
+    if(id){
+      const img=`https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+      bulkResults.innerHTML+=`
+      <div class="bg-gray-800 p-2 rounded">
+        <img src="${img}" class="rounded">
+        <a href="${img}" download class="block bg-green-600 mt-2 text-center rounded">Download</a>
+      </div>`;
+    }
+  });
+}
+
+function generateTitles(){
+  const t=titleTopic.value;
+  const ideas=[
+    `How to ${t} in 2026`,
+    `${t} – Complete Guide`,
+    `I Tried ${t} for 30 Days`,
+    `${t} Secrets Nobody Tells You`,
+    `${t} for Beginners`
+  ];
+  titleResults.innerHTML=ideas.map(i=>`<li class="bg-gray-800 p-2 rounded">${i}</li>`).join("");
+}
+
+function generateTags(){
+  const k=tagTopic.value;
+  const tags=[
+    k,`${k} tutorial`,`${k} tips`,
+    `learn ${k}`,`${k} 2026`,
+    `best ${k}`,`${k} shorts`
+  ];
+  tagResults.value=tags.map(t=>"#"+t.replace(" ","")).join(" ");
+}
+
+function generateDesc(){
+  const t=descTopic.value;
+  descResults.value=
+`In this video, we explore ${t} in detail.
+
+This video covers:
+- What is ${t}
+- How to use ${t}
+- Tips and tricks
+- Common mistakes
+
+Subscribe for more YouTube growth tips.
+#${t.replace(" ","")}`;
+}
+</script>
+
+<style>
+.tabBtn{
+  background:#1f2933;
+  padding:8px 14px;
+  border-radius:8px;
+}
+.tabBtn:hover{background:#374151;}
+</style>
+
+</body>
+</html>
